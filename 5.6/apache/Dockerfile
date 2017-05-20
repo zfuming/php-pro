@@ -26,9 +26,6 @@ apt-get install -y --no-install-recommends \
     docker-php-ext-install gd pdo_mysql mysqli opcache intl bcmath zip mcrypt sockets && \
     docker-php-ext-enable bcmath zip pdo_mysql mcrypt sockets
 
-# install memcached
-RUN pecl install memcached
-
 # drush command
 RUN curl -fsSL -o /usr/local/bin/drush "https://github.com/drush-ops/drush/releases/download/$DRUSH_VERSION/drush.phar" && \
     chmod +x /usr/local/bin/drush
