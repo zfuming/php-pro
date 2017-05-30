@@ -142,7 +142,7 @@ COPY nginx.vh.default.conf /etc/nginx/conf.d/default.conf
 
 EXPOSE 80 443 9000
 
-COPY docker-php-entrypoint.sh /usr/local/bin/docker-php-entrypoint
+COPY docker-php-entrypoint /usr/local/bin/
 
 ENTRYPOINT ["docker-php-entrypoint"]
 
