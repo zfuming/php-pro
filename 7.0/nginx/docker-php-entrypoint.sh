@@ -1,5 +1,11 @@
 #!/bin/sh
 
-nginx -g daemon off
+# start nginx
+if [ "$1" = 'nginx' ]; then
+    nginx -g daemon off
+fi
 
-php-fpm
+# start php-fpm
+if [ "$2" = 'php-fpm' ]; then
+    php-fpm
+fi
