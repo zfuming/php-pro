@@ -139,11 +139,10 @@ RUN GPG_KEYS=B0F4253373F8F6F510D42178520A9993A1C052F8 \
 
 COPY nginx.conf /etc/nginx/nginx.conf
 COPY nginx.vh.default.conf /etc/nginx/conf.d/default.conf
+COPY docker-php-run /usr/local/bin/
+
+RUN chmod +x /usr/local/bin/docker-php-run
 
 EXPOSE 80 443 9000
 
-COPY docker-php-entrypoint /usr/local/bin/
-
-ENTRYPOINT ["docker-php-entrypoint"]
-
-CMD ["nginx","php-fpm"]
+CMD ["docker-php-run"]

@@ -137,3 +137,5 @@ RUN composer config -g repo.packagist composer https://packagist.phpcomposer.com
 
 # set work dir
 WORKDIR $APP_ROOT
+
+CMD ["docker-php-run"]
