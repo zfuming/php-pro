@@ -137,6 +137,3 @@ RUN composer config -g repo.packagist composer https://packagist.phpcomposer.com
 
 # set work dir
 WORKDIR $APP_ROOT
-EXPOSE 9000
-
-CMD ["php-fpm"]
