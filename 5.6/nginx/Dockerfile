@@ -143,6 +143,8 @@ COPY docker-php-run /usr/local/bin/
 
 RUN chmod +x /usr/local/bin/docker-php-run
 
+RUN mkdir /usr/local/var/log/nginx
+
 EXPOSE 80 443 9000
 
 CMD ["docker-php-run"]
