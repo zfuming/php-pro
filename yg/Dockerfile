@@ -69,6 +69,7 @@ RUN set -xe && \
         exif \
         imap \
         intl \
+        iconv \
         ldap \
         mcrypt \
         mysql \
