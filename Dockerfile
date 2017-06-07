@@ -1,4 +1,4 @@
-FROM zfming/php-pro:7.0-nginx
+FROM zfming/php-pro:7.1-nginx
 
 ENV DRUSH_VERSION 8.1.2
 ENV APP_ROOT /var/www/html
@@ -69,6 +69,7 @@ RUN set -xe && \
         exif \
         imap \
         intl \
+        iconv \
         ldap \
         mcrypt \
         mysqli \
