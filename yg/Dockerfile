@@ -3,139 +3,49 @@ FROM zfming/php-pro:5.6-nginx
 ENV DRUSH_VERSION 8.1.2
 ENV APP_ROOT /var/www/html
 
-# Recreate user with correct params
-RUN deluser www-data && \
-	addgroup -g 82 -S www-data && \
-	adduser -u 82 -D -S -s /bin/bash -G www-data www-data && \
-	sed -i '/^www-data/s/!/*/' /etc/shadow
+RUN apt-get clean -y
+# Install the PHP extensions we need
 
-RUN set -xe && \
-    apk add --update \
-        bash \
-        bzip2 \
-        ca-certificates \
-        c-client \
-        git \
-        gzip \
-        icu-libs \
-        imagemagick \
-        imap \
-        libbz2 \
-        libjpeg-turbo \
-        libmcrypt \
-        libpng \
-        libxslt \
-        make \
-        mariadb-client \
-        libmemcached-libs \
-        openssh \
-        openssh-client \
-        openssl \
-        patch \
-        postgresql-client \
-        rsync \
-        su-exec \
-        tar \
-        wget \
-        yaml \
+RUN apt-get update && \
+apt-get install -y --no-install-recommends \
+    curl \
+    mysql-client \
+    libmemcached-dev \
+    libz-dev \
+    libzip-dev \
+    libpq-dev \
+    libjpeg-dev \
+    libpng12-dev \
+    libfreetype6-dev \
+    libicu-dev \
+    libssl-dev \
+    libmemcached-dev \
+    zlib1g-dev \
+    libmcrypt-dev && \
+    docker-php-ext-configure gd --with-png-dir=/usr --with-jpeg-dir=/usr && \
+    docker-php-ext-install gd pdo_mysql mysqli opcache intl bcmath zip mcrypt sockets && \
+    docker-php-ext-enable bcmath zip pdo_mysql mcrypt sockets
 
-        # Temporarily packages to compile extensions
-        autoconf \
-        cmake \
-        build-base \
-        bzip2-dev \
-        freetype-dev \
-        icu-dev \
-        imagemagick-dev \
-        imap-dev \
-        jpeg-dev \
-        libjpeg-turbo-dev \
-        libmemcached-dev \
-        libmcrypt-dev \
-        libpng-dev \
-        libtool \
-        libxslt-dev \
-        openldap-dev \
-        pcre-dev \
-        postgresql-dev \
-        yaml-dev && \
+# install memcached
+RUN pecl install memcached
 
-    docker-php-source extract && \
+# drush command
+RUN curl -fsSL -o /usr/local/bin/drush "https://github.com/drush-ops/drush/releases/download/$DRUSH_VERSION/drush.phar" && \
+    chmod +x /usr/local/bin/drush
 
-    docker-php-ext-install \
-        bcmath \
-        bz2 \
-        calendar \
-        exif \
-        imap \
-        intl \
-        iconv \
-        ldap \
-        mcrypt \
-        mysql \
-        mysqli \
-        opcache \
-        pdo_mysql \
-        pdo_pgsql \
-        pgsql \
-        phar \
-        soap \
-        sockets \
-        xmlrpc \
-        xsl \
-        zip && \
-
-    # GD
-    docker-php-ext-configure gd \
-        --with-gd \
-        --with-freetype-dir=/usr/include/ \
-        --with-png-dir=/usr/include/ \
-        --with-jpeg-dir=/usr/include/ && \
-      NPROC=$(getconf _NPROCESSORS_ONLN) && \
-      docker-php-ext-install -j${NPROC} gd && \
-
-    # PECL extensions
-    pecl config-set php_ini "$PHP_INI_DIR/php.ini" && \
-
-    # Install composer
-    wget -qO- https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer && \
-
-    # Install drush
-    wget -qO- https://github.com/drush-ops/drush/releases/download/$DRUSH_VERSION/drush.phar > /usr/local/bin/drush && \
-    chmod +x /usr/local/bin/drush && \
-
-    # Create working dir
-    mkdir -p $APP_ROOT && \
-    chown -R www-data:www-data $APP_ROOT && \
-
-    # Clean up root crontab
-    truncate -s 0 /etc/crontabs/root && \
-
-    # Cleanup
-    su-exec www-data composer clear-cache && \
-    docker-php-source delete && \
-    apk del --purge \
-        *-dev \
-        autoconf \
-        build-base \
-        cmake \
-        libtool && \
-
-    rm -rf \
-        /usr/src/php.tar.xz \
-        /usr/src/php/ext/memcached \
-        /usr/src/php/ext/uploadprogress \
-        /usr/include/php \
-        /usr/lib/php/build \
-        /var/cache/apk/* \
-        /tmp/* \
-        /root/.composer
-
-# config composer PATH
-ENV PATH "/home/www-data/.composer/vendor/bin:$PATH"
+# install composer
+RUN php -r "readfile('https://getcomposer.org/installer');" > composer-setup.php && \
+    php composer-setup.php && \
+    php -r "unlink('composer-setup.php');" && \
+    mv composer.phar /usr/local/bin/composer
 
 # config china mirror
 RUN composer config -g repo.packagist composer https://packagist.phpcomposer.com
+
+# install drupal console
+RUN curl https://drupalconsole.com/installer -L -o drupal.phar && \
+    mv drupal.phar /usr/local/bin/drupal && \
+    chmod +x /usr/local/bin/drupal
 
 # set work dir
 WORKDIR $APP_ROOT
