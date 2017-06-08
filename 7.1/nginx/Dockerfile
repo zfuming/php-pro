@@ -1,7 +1,7 @@
 FROM php:7.1-fpm
 
 RUN apt-get update \
-	&& apt-get install nginx -y \
+	&& apt-get install -y --no-install-recommends nginx \
 	&& rm -rf /var/lib/apt/lists/*
 
 # forward request and error logs to docker log collector
