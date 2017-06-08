@@ -23,7 +23,7 @@ apt-get install -y --no-install-recommends \
     zlib1g-dev \
     libmcrypt-dev && \
     docker-php-ext-configure gd --with-png-dir=/usr --with-jpeg-dir=/usr && \
-    docker-php-ext-install gd pdo_mysql mysqli opcache intl bcmath zip mcrypt sockets && \
+    docker-php-ext-install gd mysql pdo_mysql mysqli opcache intl bcmath zip mcrypt sockets && \
     docker-php-ext-enable bcmath zip pdo_mysql mcrypt sockets
 
 # drush command
