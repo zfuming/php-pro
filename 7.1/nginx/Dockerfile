@@ -10,6 +10,7 @@ RUN ln -sf /dev/stdout /var/log/nginx/access.log \
 
 STOPSIGNAL SIGTERM
 
+COPY nginx.conf /etc/nginx/nginx.conf
 COPY nginx.vh.default.conf /etc/nginx/conf.d/default.conf
 COPY docker-php-run /usr/local/bin/
 
